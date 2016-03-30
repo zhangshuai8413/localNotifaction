@@ -7,7 +7,12 @@
 //
 
 #import "AppDelegate.h"
-
+#import "JPUSHService.h"
+#import "KCLocalVC.h"
+#import "BlueViewController.h"
+#import "LocalViewController.h"
+#import "HZNavigationController.h"
+#import "HZURLManager.h"
 @interface AppDelegate ()
 
 @end
@@ -17,9 +22,63 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+     [JPUSHService registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge |
+                                                      UIUserNotificationTypeSound |
+                                                      UIUserNotificationTypeAlert)
+                                          categories:nil];
+    
+    NSDictionary *localNotification = [launchOptions objectForKey: UIApplicationLaunchOptionsLocalNotificationKey];
+    NSLog(@"localNotification %@",localNotification);
+    [self URLSchemeconfig];
+   
     return YES;
 }
 
+
+-(void)URLSchemeconfig{
+    /**
+     *  URL配置
+     */
+  
+    
+}
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
+
+    
+    
+    [JPUSHService showLocalNotificationAtFront:notification identifierKey:@"nihao"];
+   
+    NSInteger badge = [UIApplication sharedApplication].applicationIconBadgeNumber;
+    badge -= notification.applicationIconBadgeNumber;
+    badge = badge >= 0 ? badge : 0;
+    [UIApplication sharedApplication].applicationIconBadgeNumber = badge;
+    
+    NSDictionary  *  userinfo =notification.userInfo;
+    [HZURLManageConfig sharedConfig].config =userinfo;
+    
+//    NSLog(@"userinfo %@",userinfo);
+
+//    NSString *vc = userinfo[@"VC"];
+//    
+//    LocalViewController *locVC =[[LocalViewController alloc] init];
+//    
+//    UIApplication *appl =[UIApplication sharedApplication] ;
+//    
+//    UIViewController *viewController = nil;
+//    
+//    appl.keyWindow.rootViewController=locVC;
+   
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"bendi" object:@(110) userInfo:userinfo];
+
+
+
+   
+   }
+
+//-(void)jumpToSepeciscalVc:(NSDictionary *)useInfo{
+//
+//
+//}
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
@@ -32,6 +91,8 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    [application setApplicationIconBadgeNumber:0];
+    [application cancelAllLocalNotifications];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {

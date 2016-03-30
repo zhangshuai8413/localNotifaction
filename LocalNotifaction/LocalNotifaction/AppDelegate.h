@@ -9,6 +9,11 @@
 #import <UIKit/UIKit.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
+{
+UILabel *_infoLabel;
+UILabel *_tokenLabel;
+UILabel *_udidLabel;
+}
 
 @property (strong, nonatomic) UIWindow *window;
 
